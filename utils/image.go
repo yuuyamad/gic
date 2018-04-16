@@ -10,16 +10,15 @@ import (
 )
 
 type Options struct {
-	Src string
-	Dest string
+	Dir string
 	FromFormat string
 	ToFormat string
 }
 
 
-// package for image convert from jpen,jpg or png or gif to jpeg,jpg or png or gif
+// package for image convert from jpen,jpg,png,gif to jpeg,jpg,png,gif
 func (p *Options)ConvertImage() error {
-	err := filepath.Walk(p.Src, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(p.Dir, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) == "." + p.FromFormat {
 			file, err := os.Open(path)
 			logError(err)
@@ -29,8 +28,9 @@ func (p *Options)ConvertImage() error {
 			logError(err)
 
 			filename := getFileName(path)
+			dirpath := getPathName(path)
 
-			out, err := os.Create(p.Dest + "/" + filename + "." + p.ToFormat)
+			out, err := os.Create(dirpath + "/" + filename + "." + p.ToFormat)
 			logError(err)
 			defer out.Close()
 
@@ -58,4 +58,9 @@ func (p *Options)ConvertImage() error {
 // get fileneme without filepath and extention
 func getFileName(path string) string{
 	return filepath.Base(path[:len(path)-len(filepath.Ext(path))])
+}
+
+// get dirpath
+func getPathName(path string) string {
+	return filepath.Dir(path)
 }
